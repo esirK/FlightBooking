@@ -17,6 +17,9 @@ from django.urls import path
 
 from authentication.views import UserRegistrationAPIView
 
+app_name = "authentication"
+
+
 urlpatterns = [
-    path('users/register', UserRegistrationAPIView.as_view()),
+    path('users/register', UserRegistrationAPIView.as_view(), name="register"),
 ]
