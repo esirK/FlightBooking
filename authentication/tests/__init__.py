@@ -21,5 +21,14 @@ class BaseTestCase(TestCase):
             "password": "Nice19407#",
         }
 
+        cls.user = {
+            "first_name": "Miriam",
+            "last_name": "Wanjiku",
+            "username": "Shiko",
+            "email": "shiko@gmail.com",
+            "password": "Nice19407#",
+        }
+
         # URLS
         cls.registration_url = reverse('authentication:register')
+        cls.login_url = reverse('authentication:login')
