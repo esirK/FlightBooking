@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import dj_database_url
+from django.conf.global_settings import DATABASES
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '@q-=mq&2uc_1t0_kba_jattlrhpyluvl)9t(d!9c(6e9_l&a9%'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,7 +39,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Installed apps
+    "rest_framework",
+    "django_extensions",
+
+    # Local apps
+    'authentication',
 ]
+
+AUTH_USER_MODEL = "authentication.FlightUser"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -73,12 +84,7 @@ WSGI_APPLICATION = 'FlightBooking.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+DATABASES['default'] = dj_database_url.parse(os.getenv('DATABASE_URL'))
 
 
 # Password validation
@@ -118,3 +124,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'core.exceptions.core_exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'error',
+}
