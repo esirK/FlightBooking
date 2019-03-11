@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.response import Response
 
-from authentication.serializers import UserSerializer
+from authentication.serializers import UserSerializer, LoginSerializer
 from core.validators import PasswordValidator, validate_email
 from django.contrib.auth.password_validation import validate_password
 
@@ -20,3 +21,15 @@ class UserRegistrationAPIView(generics.ListCreateAPIView):
         validate_email(serializer.validated_data.get('email'))
 
         return serializer.save()
+
+
+class UserLoginAPIView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = LoginSerializer
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        serializer = self.serializer_class(data=data)
+        serializer.is_valid(raise_exception=True)
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
