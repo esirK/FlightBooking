@@ -4,10 +4,15 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+def user_passport(user, filename):
+    return f'user_{user.id}_{filename}'
+
+
 class FlightUser(AbstractUser):
     email = models.EmailField('email address', blank=True, unique=True)
     first_name = models.CharField('first name', max_length=30, blank=False)
     last_name = models.CharField('last name', max_length=150, blank=False)
+    passport_photo = models.ImageField('Passport Photo', upload_to=user_passport, blank=True)
 
     username = models.CharField(
         'username',
