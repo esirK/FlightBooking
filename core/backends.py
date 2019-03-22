@@ -1,6 +1,8 @@
 """
 Does a Custom authentication
 """
+from _datetime import datetime, timedelta
+
 import jwt
 from django.utils.translation import ugettext_lazy as _
 
@@ -8,8 +10,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import exceptions
 
-from jwt import DecodeError
-
+from jwt import DecodeError, ExpiredSignatureError
 
 User = get_user_model()
 
@@ -25,7 +26,7 @@ class JWTAuthentication(BaseAuthentication):
             token = auth[1]
             try:
                 key = jwt.decode(token, settings.SECRET_KEY)
-            except DecodeError:
+            except (DecodeError, ExpiredSignatureError):
                 msg = 'Signature verification failed. Invalid token.'
                 raise exceptions.ValidationError(msg)
             return self.authenticate_credentials(key.get('email'))
@@ -37,9 +38,11 @@ class JWTAuthentication(BaseAuthentication):
 
         return (user, None)
 
+
 def token_encode(data):
     return {
-        'token': jwt.encode({"email": data.get('email')}, settings.SECRET_KEY).decode(),
+        'token': jwt.encode({"email": data.get('email'), 'exp': datetime.utcnow() + timedelta(seconds=60)},
+                            settings.SECRET_KEY).decode(),
     }
 
 

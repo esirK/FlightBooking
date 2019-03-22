@@ -40,11 +40,15 @@ class UserLoginAPIView(generics.CreateAPIView):
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
-@api_view(['POST', 'GET'])
+# class BookFlight(generics.ListCreateAPIView):
+#     queryset =
+#
+
+@api_view(['POST', 'GET', 'DELETE'])
 @permission_classes((IsAuthenticated, ))
 def passport_picture(request):
     """
-    Allow user to upload a passport photo and also view the photo.
+    Allow user to upload a passport photo, view the photo and also DELETE a photo.
     """
     photo = request.FILES.get('passport', None)
 
@@ -55,7 +59,7 @@ def passport_picture(request):
         return Response(data={"success": {"passport_photo_url": passport_photo}})
 
     if photo and request.method == 'POST':
-        user = User.objects.first()
+        user = request.user
         passport_name = user_passport(user, photo.name)
         user.passport_photo = passport_name
         user.save()
@@ -64,5 +68,16 @@ def passport_picture(request):
         uploaded_file_url = fs.url(filename)
 
         return Response(data={"success": {"uploaded_file_url": uploaded_file_url}})
+    if request.method == 'DELETE':
+        user = request.user
+        fs = FileSystemStorage()
+        if user.passport_photo:
+            fs.delete(name=user.passport_photo)
+
+            user.passport_photo = None
+            user.save()
+            return Response(data={"message": 'Photo deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+        return Response(data={"message": 'user has no photo'}, status=status.HTTP_200_OK)
     else:
         raise ValidationError("Passport image not supplied")
