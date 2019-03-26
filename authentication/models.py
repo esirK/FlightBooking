@@ -1,7 +1,11 @@
+import os
+
 import jwt
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+from datetime import datetime, timedelta
 
 
 def user_passport(user, filename):
@@ -30,11 +34,8 @@ class FlightUser(AbstractUser):
         to be called by `user.token`
         :return string
         """
-        token = jwt.encode(
-            {
-                "id": self.id,
-                "username": self.username,
-                "email": self.email,
-            },
-            settings.SECRET_KEY, algorithm='HS256').decode()
+        token = jwt.encode({"email": self.email, 'exp': datetime.utcnow() +
+                                                        timedelta(hours=int(os.getenv('TOKEN_EXPIRE')))},
+                           settings.SECRET_KEY).decode()
+
         return token
