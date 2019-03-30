@@ -40,10 +40,6 @@ class UserLoginAPIView(generics.CreateAPIView):
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
-# class BookFlight(generics.ListCreateAPIView):
-#     queryset =
-#
-
 @api_view(['POST', 'GET', 'DELETE'])
 @permission_classes((IsAuthenticated, ))
 def passport_picture(request):
