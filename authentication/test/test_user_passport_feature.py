@@ -1,4 +1,4 @@
-from authentication.tests import BaseTestCase
+from authentication.test import BaseTestCase
 
 import tempfile
 from django.core.files.storage import FileSystemStorage

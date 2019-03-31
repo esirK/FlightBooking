@@ -4,7 +4,8 @@ from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.exceptions import APIException, ValidationError
+from rest_framework.exceptions import ValidationError
+from rest_framework.views import APIView
 
 from authentication.models import user_passport
 from authentication.serializers import UserSerializer, LoginSerializer
@@ -40,31 +41,31 @@ class UserLoginAPIView(generics.CreateAPIView):
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
-@api_view(['POST', 'GET', 'DELETE'])
-@permission_classes((IsAuthenticated, ))
-def passport_picture(request):
-    """
-    Allow user to upload a passport photo, view the photo and also DELETE a photo.
-    """
-    photo = request.FILES.get('passport', None)
+class PassportPicture(APIView):
+    permission_classes = (IsAuthenticated, )
 
-    if request.method == 'GET':
+    def get(self, request):
         user = request.user
         passport_photo = str(user.passport_photo)
 
         return Response(data={"success": {"passport_photo_url": passport_photo}})
 
-    if photo and request.method == 'POST':
-        user = request.user
-        passport_name = user_passport(user, photo.name)
-        user.passport_photo = passport_name
-        user.save()
-        fs = FileSystemStorage()
-        filename = fs.save(passport_name, photo)
-        uploaded_file_url = fs.url(filename)
+    def post(self, request):
+        photo = request.FILES.get('passport', None)
+        if photo:
+            user = request.user
+            passport_name = user_passport(user, photo.name)
+            user.passport_photo = passport_name
+            user.save()
+            fs = FileSystemStorage()
+            filename = fs.save(passport_name, photo)
+            uploaded_file_url = fs.url(filename)
 
-        return Response(data={"success": {"uploaded_file_url": uploaded_file_url}})
-    if request.method == 'DELETE':
+            return Response(data={"success": {"uploaded_file_url": uploaded_file_url}})
+        else:
+            raise ValidationError("Passport image not supplied")
+
+    def delete(self, request):
         user = request.user
         fs = FileSystemStorage()
         if user.passport_photo:
@@ -75,5 +76,3 @@ def passport_picture(request):
             return Response(data={"message": 'Photo deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
         return Response(data={"message": 'user has no photo'}, status=status.HTTP_200_OK)
-    else:
-        raise ValidationError("Passport image not supplied")

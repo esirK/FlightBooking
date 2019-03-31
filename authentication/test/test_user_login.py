@@ -1,4 +1,4 @@
-from authentication.tests import BaseTestCase, User
+from authentication.test import BaseTestCase, User
 
 
 class TestUserLogin(BaseTestCase):
