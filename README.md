@@ -1,7 +1,7 @@
 # Flight Booking
 
-[![Build Status](https://travis-ci.org/esirK/FlightBooking.svg?branch=ft-allow-users-signup)](https://travis-ci.org/esirK/FlightBooking)
-[![Coverage Status](https://coveralls.io/repos/github/esirK/FlightBooking/badge.svg?branch=ft-allow-users-signup)](https://coveralls.io/github/esirK/FlightBooking?branch=ft-allow-users-signup)
+[![Build Status](https://travis-ci.org/esirK/FlightBooking.svg?branch=develop)](https://travis-ci.org/esirK/FlightBooking)
+[![Coverage Status](https://coveralls.io/repos/github/esirK/FlightBooking/badge.svg?branch=develop)](https://coveralls.io/github/esirK/FlightBooking?branch=develop)
 
 FlightBooking is a web app that automates the process of booking for a flight.
 The flight booking system provides an API that allows users to 
