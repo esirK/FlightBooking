@@ -9,9 +9,14 @@ def core_exception_handler(exc, context):
     if not response:
         # If DRF can't handle the exception,
         # we manually create a response on our own and return it to the user.
+        try:
+            messages = exc.messages
+        except Exception as e:
+            messages = exc.args
+
         response = Response(
             {
-                'errors': exc.messages
+                'errors': messages
             },
             status=status.HTTP_400_BAD_REQUEST
         )

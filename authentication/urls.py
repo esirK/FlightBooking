@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import path
 
-from authentication.views import UserRegistrationAPIView, UserLoginAPIView
+from authentication.views import UserRegistrationAPIView, UserLoginAPIView, PassportPicture
 
 app_name = "authentication"
 
@@ -23,4 +23,5 @@ app_name = "authentication"
 urlpatterns = [
     path('users/register', UserRegistrationAPIView.as_view(), name="register"),
     path('users/login', UserLoginAPIView.as_view(), name="login"),
+    path('users/passport', PassportPicture.as_view(), name="passport"),
 ]
