@@ -98,7 +98,3 @@ Allows a user to book a ticket. (Authentication required)
 `POST api/v1/flight/reservation`
 
 Allows a user to make a flight reservation. (Authentication required)
-
-`POST api/v1/tickets/purchase` 
-
-Allows a user to book a ticket. (Authentication required)
