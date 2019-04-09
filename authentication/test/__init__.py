@@ -33,3 +33,4 @@ class BaseTestCase(TestCase):
         cls.registration_url = reverse('authentication:register')
         cls.login_url = reverse('authentication:login')
         cls.user_passport_url = reverse('authentication:passport')
+        cls.flights_url = reverse('flight:flights')

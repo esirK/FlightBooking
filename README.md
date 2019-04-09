@@ -50,7 +50,7 @@ If a request fails any validations, errors should be expected in the following f
 ## Endpoints
 ### Registration
 
-`POST api/register`
+`POST api/v1/register`
 
 User registration.
 Requires a request with the following format. (No Authentication required)
@@ -63,7 +63,7 @@ Requires a request with the following format. (No Authentication required)
   }
 }
 ```
-`POST api/login`
+`POST api/v1/login`
 
 User login.
 
@@ -76,26 +76,25 @@ Returns a JWT authentication token. (No Authentication required)
   }
 }
 ```
-`PUT api/profile`
+`PUT api/v1/profile`
 
 Updates a user profile e.g Update passport photo. (Authentication required)
 
-`GET api/flights`
+`GET api/v1/flights`
 
-Returns all flights available (No Authentication required)
+Returns all flight available (No Authentication required)
 
-`GET api/tickets` 
+`GET api/v1/flights/1/
+Returns a single flight (No Authentication required)
+
+`GET api/v1/tickets` 
 
 Allows a user to view his/her tickets. (Authentication required)
 
-`POST api/tickets` 
+`POST api/v1/tickets` 
 
 Allows a user to book a ticket. (Authentication required)
 
-`POST api/flights/reservation`
+`POST api/v1/flight/reservation`
 
 Allows a user to make a flight reservation. (Authentication required)
-
-`POST api/tickets/purchase` 
-
-Allows a user to book a ticket. (Authentication required)
