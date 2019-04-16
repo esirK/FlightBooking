@@ -20,3 +20,22 @@ class Flight(models.Model):
 
     def __str__(self):
         return f"Flight {self.name}"
+
+
+class Reservation(models.Model):
+    RESERVATION_STATUS = (
+        ("active", "Active"),
+        ("canceled", "Canceled"),
+        ("late", "Late"),
+        ("done", "Done")
+    )
+
+    origin = models.CharField(verbose_name='passenger origin', max_length=50, null=False)
+    destination = models.CharField(verbose_name='passenger destination', max_length=50, null=False)
+    date_of_travel = models.DateField(verbose_name="Date of Travel")
+    passenger = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reservations')
+    flight = models.ForeignKey(Flight, on_delete=models.SET_NULL, blank=True, null=True, related_name='reservations')
+    status = models.CharField(choices=RESERVATION_STATUS, max_length=150, default="active")
+
+    def __str__(self):
+        return f"Reservation for {self.passenger.email}"
