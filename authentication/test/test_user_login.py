@@ -22,10 +22,8 @@ class TestUserLogin(BaseTestCase):
     def test_registered_user_can_login_to_the_system(self):
         self.client.post(self.registration_url,
                          data=self.user)
-        response = self.client.post(self.login_url,
-                                    data={
-                                        "email": "shiko@gmail.com",
-                                        "password": "Nice19407#"}
-                                    )
+        response = self.perform_request('post', self.login_url, data={"email": "shiko@gmail.com",
+                                        "password": "Nice19407#"})
+
         self.assertEqual(200, response.status_code)
         self.assertIn('token', response.data)

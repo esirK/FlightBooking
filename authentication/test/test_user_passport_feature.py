@@ -20,21 +20,20 @@ class TestUserPassportFeature(BaseTestCase):
         Tests that un logged_in user can not upload a passport photo into the system
         """
         tmp_file = generate_image_for_testing()
-        response = self.client.post(self.user_passport_url, {'passport': tmp_file})
+        response = self.client.post(self.user_passport_url,
+                                    data={'passport': tmp_file})
 
         self.assertEqual(403, response.status_code)
 
     def test_logged_in_user_can_upload_passport_to_the_system(self):
-        self.client.post(self.registration_url,
-                         data=self.user)
-        res = self.client.post(self.login_url,
-                               data={
-                                   "email": "shiko@gmail.com",
-                                   "password": "Nice19407#"}
-                               )
+        self.perform_request('post', url=self.registration_url, data=self.user)
+
+        res = self.perform_request('post', url=self.login_url, data={
+                                                                "email": "shiko@gmail.com",
+                                                                "password": "Nice19407#"})
+
         tmp_file = generate_image_for_testing()
         token = res.json().get('token')
-
         response = self.client.post(self.user_passport_url,
                                     data={'passport': tmp_file},
                                     HTTP_AUTHORIZATION=f"Token {token}")
