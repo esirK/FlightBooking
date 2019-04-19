@@ -84,17 +84,31 @@ Updates a user profile e.g Update passport photo. (Authentication required)
 
 Returns all flight available (No Authentication required)
 
-`GET api/v1/flights/1/
+`GET api/v1/flights/<pk>/`
 Returns a single flight (No Authentication required)
+
+`POST api/v1/flights/<pk>/reservation`
+
+Allows a user to make a flight reservation. (Authentication required)
+
+`GET api/v1/flights/<pk>/reservations`
+
+Allows a user to view his/her reservation on this flight.
+Admins can view all reservations for the specified flight.
+
+`GET api/v1/all_reservations/`
+
+Allows a user to view all their flights reservations.
+
+`PUT api/v1/all_reservations/<pk>`
+
+Allows a user to edit their flights reservation. e.g Cancle the reservation
+
+
+`POST api/v1/flights/<pk>/book`
+
+Allows a User to book a ticket for flight with the specified pk (Authentication required)
 
 `GET api/v1/tickets` 
 
 Allows a user to view his/her tickets. (Authentication required)
-
-`POST api/v1/tickets` 
-
-Allows a user to book a ticket. (Authentication required)
-
-`POST api/v1/flight/reservation`
-
-Allows a user to make a flight reservation. (Authentication required)
