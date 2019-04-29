@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Flight, Reservation
+from .models import Flight, Reservation, Ticket
 from authentication.serializers import UserSerializer
 
 
@@ -17,3 +17,12 @@ class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
         fields = ('id', 'status', 'passenger', 'flight')
+
+
+class TicketSerializer(serializers.ModelSerializer):
+    reservation = ReservationSerializer(read_only=True)
+
+    class Meta:
+        model = Ticket
+        fields = ('id', 'status', 'reservation')
+        read_only_fields = ('status', )
