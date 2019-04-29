@@ -164,7 +164,10 @@ class BookTicketsAPIView(generics.CreateAPIView):
             reservation = Reservation.objects.create(passenger=user, flight=flight)
         else:
             reservation = user_reservations[0]
-
+            # Explicitly set the reservation status to active just incase the user had
+            # Canceled it earlier
+            reservation.status = 'active'
+            reservation.save()
         # Email the user their ticket information.
         self.email_user(flight)
 
