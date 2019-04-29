@@ -14,7 +14,7 @@ from django.contrib.auth.password_validation import validate_password
 User = get_user_model()
 
 
-class UserRegistrationAPIView(generics.ListCreateAPIView):
+class UserRegistrationAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 

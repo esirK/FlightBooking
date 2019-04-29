@@ -18,6 +18,7 @@ class Flight(models.Model):
     capacity = models.IntegerField(verbose_name='Number of passengers the flight can accommodate.', null=False)
     reservations_available = models.IntegerField(verbose_name='Number of reservations left for the flight', null=False)
     status = models.CharField(choices=FLIGHT_STATUS, max_length=150, default="scheduled")
+    cost = models.IntegerField(verbose_name="Cost in dollars for the Flight.", null=False, default=0)
 
     def __str__(self):
         return f"Flight {self.name}"
@@ -36,3 +37,15 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f"Reservation for {self.passenger.email}"
+
+
+class Ticket(models.Model):
+    TICKET_STATUS = (
+        ("paid", "Paid"),
+        ("not_paid", "Not Paid"),
+    )
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE, related_name='tickets')
+    status = models.CharField(choices=TICKET_STATUS, max_length=10, default='not_paid')
+
+    def __str__(self):
+        return f"Ticket for {self.reservation.passenger.email}"
