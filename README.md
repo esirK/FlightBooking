@@ -50,7 +50,7 @@ If a request fails any validations, errors should be expected in the following f
 ## Endpoints
 ### Registration
 
-`POST api/v1/register`
+`POST api/v1/users/register`
 
 User registration.
 Requires a request with the following format. (No Authentication required)
@@ -63,7 +63,7 @@ Requires a request with the following format. (No Authentication required)
   }
 }
 ```
-`POST api/v1/login`
+`POST api/v1/users/login`
 
 User login.
 
@@ -76,7 +76,7 @@ Returns a JWT authentication token. (No Authentication required)
   }
 }
 ```
-`PUT api/v1/profile`
+`PUT api/v1/users/profile`
 
 Updates a user profile e.g Update passport photo. (Authentication required)
 

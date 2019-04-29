@@ -102,15 +102,16 @@ class SingleReservationAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAdminOrIsOwner,)
 
     def has_ticket(self):
+        tickets = self.get_object().tickets.all()
+        ticket = [t for t in tickets if t.status == 'paid']
+        if ticket:
+            """
+            Booking has been done and paid therefore we cannot allow user to edit
+            the reservation info.
+            """
+            return True, {"message": "Can not update a flight reservation that has a paid booking"}
+
         return False,
-        # if self.get_object().ticket:
-        #     """
-        #     Booking has been done therefore we cannot allow user to edit
-        #     the reservation info.
-        #     """
-        #     return True, {"message": "Can not update a flight reservation that has a booking"}
-        #
-        # return False,
 
     def patch(self, request, *args, **kwargs):
         has_ticket = self.has_ticket()
