@@ -1,5 +1,8 @@
+import os
+
 from django.http import JsonResponse
-from rest_framework import generics, status
+from django.urls import reverse
+from rest_framework import generics, status, views
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -10,8 +13,10 @@ from flight.permissions import IsGetOrIsAdmin, IsAdminOrIsOwner
 from .models import Flight, Reservation, Ticket
 from .serializers import FlightSerializer, ReservationSerializer, TicketSerializer
 from django.core.mail import send_mail
+from rest_framework.decorators import api_view
 
 import threading
+import paypalrestsdk
 
 
 def custom404(request, *args, **kwargs):
@@ -42,7 +47,7 @@ class FlightDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
 class ReserveFlightAPIView(generics.ListCreateAPIView):
     """
     Allows a user to create and view flight reservation.
-    Admins can see all reservations related to this flight.
+    Admins can see all reservations related for this flight.
     """
     serializer_class = ReservationSerializer
     permission_classes = (IsAuthenticated,)
@@ -191,6 +196,7 @@ class BookTicketsAPIView(generics.CreateAPIView):
         thread = threading.Thread(target=send_mail, args=(subject, message, sender, recipient_list))
         thread.start()
 
+
 class TicketsAPIView(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = (IsAuthenticated,)
@@ -202,3 +208,107 @@ class TicketsAPIView(generics.ListAPIView):
         return [ticket for ticket in tickets
                 if ticket.reservation.passenger == user
                 or user.is_staff]
+
+
+class TicketDetailAPIView(generics.RetrieveUpdateAPIView):
+    queryset = Ticket.objects.all()
+    serializer_class = TicketSerializer
+
+
+class PayTicketAPIView(views.APIView):
+    def get(self, request, pk):
+        ticket = get_object_or_404(Ticket, pk=self.kwargs.get('pk'))
+        if ticket.status == 'paid':
+            return Response(data={
+                'message': 'payment for this ticket has already been made.',
+            })
+
+        paypalrestsdk.configure({
+            "mode": "sandbox",  # sandbox or live
+            "client_id": os.getenv('PAY_PAL_CLIENT_ID'),
+            "client_secret": os.getenv('PAY_PAL_CLIENT_SECRET')})
+        payment = paypalrestsdk.Payment(
+            {
+                "intent": "sale",
+                "payer": {
+                    "payment_method": "paypal",
+                    "payer_info": {
+                        "email": "esirkings1@gmail.com"
+                    }
+                },
+                "redirect_urls": {
+                    "return_url": request.build_absolute_uri(reverse('flight:execute', kwargs={"ticket_pk": pk})),
+                    "cancel_url": request.build_absolute_uri(reverse('flight:cancel'))},
+                "transactions": [{
+                    "item_list": {
+                        "items": [{
+                            "name": f"Flight {ticket.reservation.flight.name} Ticket",
+                            "sku": "service",
+                            "price": f"{ticket.reservation.flight.cost}",
+                            "currency": "USD",
+                            "quantity": 1}]},
+                    "amount": {
+                        "total": f"{ticket.reservation.flight.cost}",
+                        "currency": "USD"},
+                    "description": "Payment for your ticket."}]
+            }
+        )
+        if payment.create():
+            print("Payment created successfully")
+        else:
+            print(payment.error)
+            return Response(data={
+                'error': f'{payment.error}',
+            })
+
+        for link in payment.links:
+            if link.rel == "approval_url":
+                # Convert to str to avoid Google App Engine Unicode issue
+                # https://github.com/paypal/rest-api-sdk-python/pull/58
+                approval_url = str(link.href)
+                print("Redirect for approval: %s" % (approval_url))
+
+                return Response(data={
+                    'message': 'follow this link to approve the payment.',
+                    'approval_url': approval_url
+                })
+
+
+@api_view(['GET'])
+def execute(request, ticket_pk):
+    paypalrestsdk.configure({
+        "mode": "sandbox",  # sandbox or live
+        "client_id": os.getenv('PAY_PAL_CLIENT_ID'),
+        "client_secret": os.getenv('PAY_PAL_CLIENT_SECRET')})
+
+    paymentId = request.GET['paymentId']
+    payment = paypalrestsdk.Payment.find(paymentId)
+
+    PayerID = request.GET['PayerID']
+
+    if payment.execute({"payer_id": PayerID}):
+        # Update the ticket status to paid.
+        print("Payment execute successfully")
+        ticket = Ticket.objects.get(id=ticket_pk)
+        ticket.status = 'paid'
+        ticket.save()
+
+        ticket_data = TicketSerializer(ticket)
+
+        return Response(data={
+            'message': 'Payment successful',
+            'ticket': ticket_data.data
+        })
+
+    else:
+        print(payment.error)  # Error Hash
+        return Response(data={
+            'error': f'{payment.error}',
+        })
+
+
+@api_view(['GET'])
+def cancel(request):
+    return JsonResponse(data={
+        'error': "Transaction was canceled by the user.",
+    })
