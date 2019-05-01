@@ -46,7 +46,7 @@ class TestBookFlightTicket(BaseTestCase):
         self.assertEqual(mail.outbox[0].subject, f'Ticket for flight {self.flight.name}.')
 
     def test_logged_in_users_can_see_their_tickets(self):
-        url = reverse('flight:tickets', kwargs={'pk': self.flight.id})
+        url = reverse('flight:tickets')
         token = self.login_normal_user()
         response = self.perform_request('get', url, token=token)
         self.assertEqual(0, len(response.json()))
