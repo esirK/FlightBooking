@@ -147,3 +147,7 @@ REST_FRAMEWORK = {
 }
 # Activate Django-Heroku.
 django_heroku.settings(locals())
+
+# This is due to the following issue
+# https://github.com/kennethreitz/dj-database-url/issues/107
+del DATABASES['default']['OPTIONS']['sslmode']
