@@ -233,7 +233,7 @@ class PayTicketAPIView(views.APIView):
                 "payer": {
                     "payment_method": "paypal",
                     "payer_info": {
-                        "email": "esirkings1@gmail.com"
+                        "email": f"{self.request.user.email}"
                     }
                 },
                 "redirect_urls": {

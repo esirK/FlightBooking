@@ -54,3 +54,12 @@ class TestBookFlightTicket(BaseTestCase):
         self.perform_request('post', self.book_flight_url, token=token)
         response = self.perform_request('get', url, token=token)
         self.assertEqual(1, len(response.json()))
+
+    def test_approval_url_is_returned_when_paying_for_ticket(self):
+        token = self.login_normal_user()
+        self.perform_request('post', self.book_flight_url, token=token)
+        ticket = Ticket.objects.last()
+        url = reverse('flight:pay-ticket', kwargs={'pk': ticket.id})
+        result = self.perform_request('get', url, token=token)
+        self.assertEqual(200, result.status_code)
+        self.assertIn('approval_url', result.json())
