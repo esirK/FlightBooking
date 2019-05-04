@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import django_heroku
 import dj_database_url
 from django.conf.global_settings import DATABASES
 
@@ -144,3 +145,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ),
 }
+# Activate Django-Heroku.
+django_heroku.settings(locals())
