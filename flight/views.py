@@ -211,8 +211,15 @@ class TicketsAPIView(generics.ListAPIView):
 
 
 class TicketDetailAPIView(generics.RetrieveUpdateAPIView):
-    queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self):
+        ticket = get_object_or_404(Ticket, {'pk': self.kwargs.get('pk')})
+        if ticket.reservation.passenger == self.request.user:
+            return ticket
+        else:
+            return None
 
 
 class PayTicketAPIView(views.APIView):

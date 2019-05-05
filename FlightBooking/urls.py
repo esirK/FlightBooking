@@ -16,12 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from flight.views import custom404
+from rest_framework_swagger.views import get_swagger_view
 
 handler404 = custom404
+
+schema_view = get_swagger_view(title='Flight API')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('authentication.urls')),
     path('api/v1/', include('flight.urls')),
+    path('', schema_view)
 ]
-

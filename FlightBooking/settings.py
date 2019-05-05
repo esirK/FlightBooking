@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # Installed apps
     "rest_framework",
     "django_extensions",
+    "rest_framework_swagger",
 
     # Local apps
     'flight',
