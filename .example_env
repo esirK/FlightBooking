@@ -1,0 +1,7 @@
+export SECRET_KEY='<YourSecretKey>'
+export DATABASE_URL='postgres://username:password@host:5432/database_name'
+export TOKEN_EXPIRE=60
+export EMAIL_HOST_USER='email_address'
+export EMAIL_HOST_PASSWORD="email_password"
+export PAY_PAL_CLIENT_ID="<PAY_PAL_CLIENT_ID>"
+export PAY_PAL_CLIENT_SECRET="<PAY_PAL_CLIENT_SECRET>"

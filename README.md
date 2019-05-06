@@ -102,7 +102,7 @@ Allows a user to view all their flights reservations.
 
 `PUT api/v1/all_reservations/<pk>`
 
-Allows a user to edit their flights reservation. e.g Cancle the reservation
+Allows a user to edit their flights reservation. e.g Cancel the reservation
 
 
 `POST api/v1/flights/<pk>/book`
@@ -112,3 +112,16 @@ Allows a User to book a ticket for flight with the specified pk (Authentication 
 `GET api/v1/tickets` 
 
 Allows a user to view his/her tickets. (Authentication required)
+
+### How to Run the app.
+   1. Create a virtual environment using the following command
+   `virtualenv -p python3 <name_of_environment>`
+    
+   2. Clone the repository by running `git clone git@github.com:esirK/FlightBooking.git`
+   3. Install all requirements of the project by running `pip install -r requirements.txt`
+   4. Copy the .example_env provided in this project and rename it to .env; Ensure you replace the place holders in the file.
+   5. Create a postgres database and add its details to your DATABASE_URL in your .env file.
+   6. ensure all tests are passing by running `python manage.py test`
+   7. Run `python manage.py migrate` to apply the migrations.
+   8. Run the app by running `python manage.py runserver`
+   
