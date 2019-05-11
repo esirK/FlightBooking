@@ -5,6 +5,7 @@ from flight.models import Flight, Reservation, Ticket
 from django.contrib.auth import get_user_model
 from rest_framework.reverse import reverse
 from django.core import mail
+from django.core.management import call_command
 
 User = get_user_model()
 
@@ -63,3 +64,7 @@ class TestBookFlightTicket(BaseTestCase):
         result = self.perform_request('get', url, token=token)
         self.assertEqual(200, result.status_code)
         self.assertIn('approval_url', result.json())
+
+    def test_send_reminder_command(self):
+        output = call_command('send_reminder')
+        self.assertIsNone(output)
